@@ -49,9 +49,9 @@ def em():
     p = []
     q = []
     mu_1 = [1,1]
-    mu_2 = [3,3]
-    sigma_1 = ([1,0],[0,2])
-    sigma_2 = ([1,0],[0,2])
+    mu_2 = [5,5]
+    sigma_1 = ([5,10],[10,5])
+    sigma_2 = ([5,10],[10,5])
     for i in range(0,150):
         c = np.random.multivariate_normal(mu_1,sigma_1)
         d = np.random.multivariate_normal(mu_2,sigma_2)
@@ -102,6 +102,7 @@ def clstr_txt(k):
             for i in range(0,701):
                 if j == i:
                     a = rows
+                    del a[0]
                     y.append(a)
         del y[0]
         [centroid,label,inertia] = cluster.k_means(y,k)
@@ -111,51 +112,88 @@ def clstr_txt(k):
         return math.log10(inertia)
     csvfile.close()
 
-def clstr_txt3():
+def clstr_txt8():
     with open(r'G:\pyproj\EE511Proj3\nips-87-92.csv') as csvfile:    #Change the directory to file directory
         reader = csv.reader(csvfile)
         y = []
-        x = []
-        b = []
-        c = []
         for j,rows in enumerate(reader):
             for i in range(0,701):
                 if j == i:
                     a = rows
+                    del a[0]
                     y.append(a)
         del y[0]
-        [centroid,label,inertia] = cluster.k_means(y,3)
+        [centroid,label,inertia] = cluster.k_means(y,8)
         print(centroid)
         print(label)
         print(inertia)
-        for m in range(0,len(label)):
-            if label[m] == 0:
-                x.append(y[m][0])
-            elif label[m] == 1:
-                b.append(y[m][0])
-            elif label[m] == 2:
-                c.append(y[m][0])
-        print("The doc_id of the first cluster are:")
-        print(x)
-        print("The doc_id of the second cluster are:")
-        print(b)
-        print("The doc_id of the third cluster are:")
-        print(c)
+        return label
+    csvfile.close()
+
+def out_clstr8():
+    a = clstr_txt8()
+    with open(r'G:\pyproj\EE511Proj3\nips-87-92.csv') as csvfile:    #Change the directory to file directory
+        reader = csv.reader(csvfile)
+        c_1 = []
+        c_2 = []
+        c_3 = []
+        c_4 = []
+        c_5 = []
+        c_6 = []
+        c_7 = []
+        c_8 = []
+        b = [row[0] for row in reader]
+        del b[0]
+        for m in range(0,len(a)):
+            if a[m] == 0:
+                c_1.append(b[m])
+            elif a[m] == 1:
+                c_2.append(b[m])
+            elif a[m] == 2:
+                c_3.append(b[m])
+            elif a[m] == 3:
+                c_4.append(b[m])
+            elif a[m] == 4:
+                c_5.append(b[m])
+            elif a[m] == 5:
+                c_6.append(b[m])
+            elif a[m] == 6:
+                c_7.append(b[m])
+            elif a[m] == 7:
+                c_8.append(b[m])
+        print("The doc_id of the 1st cluster are:")
+        print(c_1)
+        print("The doc_id of the 2nd cluster are:")
+        print(c_2)
+        print("The doc_id of the 3rd cluster are:")
+        print(c_3)
+        print("The doc_id of the 4th cluster are:")
+        print(c_4)
+        print("The doc_id of the 5th cluster are:")
+        print(c_5)
+        print("The doc_id of the 6th cluster are:")
+        print(c_6)
+        print("The doc_id of the 7th cluster are:")
+        print(c_7)
+        print("The doc_id of the 8th cluster are:")
+        print(c_8)
     csvfile.close()
 
 test_faith()
 em()
 a = []
 b = []
-for k in range(2,10):
+x = input("Please input the upbound of k you want to test:")
+for k in range(2,int(x) + 1):
     c = clstr_txt(int(k))
     a.append(k)
     b.append(c)
 plt.plot(a,b)
 plt.xlabel('No. of clusters')
-plt.ylabel('p-norm of cluster center to each point')
+plt.ylabel('log of p-norm of cluster center to each point')
 plt.title('Finding Elbow')
 plt.show()
-clstr_txt3()     #clustering in k = 3
+out_clstr8()   #clustering in k = 8
+
 
 
