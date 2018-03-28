@@ -49,9 +49,9 @@ def em():
     p = []
     q = []
     mu_1 = [1,1]
-    mu_2 = [5,5]
-    sigma_1 = ([5,10],[10,5])
-    sigma_2 = ([5,10],[10,5])
+    mu_2 = [4,4]
+    sigma_1 = ([6,0],[0,6])
+    sigma_2 = ([6,0],[0,6])
     for i in range(0,150):
         c = np.random.multivariate_normal(mu_1,sigma_1)
         d = np.random.multivariate_normal(mu_2,sigma_2)
@@ -62,12 +62,6 @@ def em():
     for i in range(0,len(s)):
         plt.scatter(s[i][0],s[i][1],c = 'r')
         plt.scatter(p[i][0],p[i][1],c = 'b')
-    plt.plot()
-    plt.xlabel("The 1st dimension of GMM")
-    plt.ylabel("The 2nd dimension of GMM")
-    plt.title("2DGMM with 2 subpopulation in each dimension")
-    plt.show()
-    y = mixture.GaussianMixture(n_components = 2)
     start = time.clock()
     x.fit(q)
     end = time.clock()
@@ -79,9 +73,22 @@ def em():
     print(x.covariances_)
     print("The mean point of 2-dimension Gaussian distribution is:")
     print(x.means_)
+    a = np.linspace(-7,14)
+    b = np.linspace(-7,14)
+    A,B = np.meshgrid(a,b)
+    Q = np.array([A.ravel(), B.ravel()]).T
+    z = - x.score_samples(Q)
+    z = z.reshape(A.shape) 
+    plt.contour(a,b,z, levels=np.logspace(0, 1, 10))
+    plt.xlabel("The 1st dimension of GMM")
+    plt.ylabel("The 2nd dimension of GMM")
+    plt.title("2DGMM with 2 subpopulation in each dimension")
+    plt.show()
+    y = mixture.GaussianMixture(n_components = 2)
     data_1 = xlrd.open_workbook(r'G:\pyproj\EE511Proj3\oldfaithful.xlsx')
     table = data_1.sheet_by_name(u'Sheet1')
     m = table.col_values(0)
+    n = table.col_values(1)
     c = []
     for i in range(0,len(m)):
         c.append(table.row_values(i))
@@ -92,7 +99,41 @@ def em():
     print(y.covariances_)
     print("The mean points of distribution are:")
     print(y.means_)
-
+    
+    
+def em_of():
+	"""EM on old_faith data"""
+    data_1 = xlrd.open_workbook(r'G:\pyproj\EE511Proj3\oldfaithful.xlsx')    #Change the directory to file directory
+    table = data_1.sheet_by_name(u'Sheet1')
+    x = table.col_values(0)
+    y = table.col_values(1)
+    c = []
+    for i in range(0,len(x)):
+        c.append(table.row_values(i))
+    print(c)
+    [centroid,label,inertia] = cluster.k_means(c,2)
+    print(centroid)
+    print(label)
+    print(inertia)
+    for j in range(0,len(label)):
+       if label[j] == 1:
+           plt.scatter(x[j],y[j],marker = '.',c = 'r')
+       elif label[j] == 0:
+           plt.scatter(x[j],y[j],marker = '*',c = 'b')
+    plt.xlabel('eruptions')
+    plt.ylabel('waiting')
+    plt.title('The comparison between kmeans clustering and EM model')
+    k = mixture.GaussianMixture(n_components = 2)
+    print(k.fit(c))
+    a = np.linspace(0,6)
+    b = np.linspace(40,100)
+    A,B = np.meshgrid(a,b)
+    Q = np.array([A.ravel(), B.ravel()]).T
+    z = - k.score_samples(Q)
+    z = z.reshape(A.shape) 
+    plt.contour(a,b,z, levels = np.logspace(0, 1, 10))
+    plt.show()
+    
 def clstr_txt(k):
     """The 3rd part of project3"""
     with open(r'G:\pyproj\EE511Proj3\nips-87-92.csv') as csvfile:    #Change the directory to file directory
